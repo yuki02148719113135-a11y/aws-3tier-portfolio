@@ -7,7 +7,7 @@
 set -e
 
 APP_DIR="/opt/app"
-REPO_URL="https://github.com/[your-username]/aws-3tier-portfolio.git"
+REPO_URL="https://github.com/yuki02148719113135-a11y/aws-3tier-portfolio.git"
 SERVICE_FILE="/etc/systemd/system/flask-app.service"
 
 echo "=== Flask アプリデプロイ開始 ==="

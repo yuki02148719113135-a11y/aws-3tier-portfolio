@@ -156,7 +156,7 @@ aws-3tier-portfolio/
 ### 1. リポジトリクローン
 
 ```bash
-git clone https://github.com/[your-username]/aws-3tier-portfolio.git
+git clone https://github.com/yuki02148719113135-a11y/aws-3tier-portfolio.git
 cd aws-3tier-portfolio
 ```
 
@@ -192,7 +192,7 @@ terraform output
 ssh -i ~/.ssh/portfolio-key.pem ec2-user@<EC2-Public-IP>
 
 # リポジトリクローン
-git clone https://github.com/[your-username]/aws-3tier-portfolio.git
+git clone https://github.com/yuki02148719113135-a11y/aws-3tier-portfolio.git
 cd aws-3tier-portfolio/app
 
 # 依存関係インストール
