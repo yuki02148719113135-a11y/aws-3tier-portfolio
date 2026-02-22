@@ -75,7 +75,9 @@ graph TB
     style ALB2 fill:#8C4FFF,stroke:#232F3E,stroke-width:2px
 ```
 
-> 📊 **詳細な構成図**: `docs/architecture.png` を参照
+> 詳細な構成図は `docs/architecture.png` に追加予定（EC2/RDS/ALB構築後に作成）
+>
+> VPC設計の詳細は [docs/vpc-design.md](docs/vpc-design.md) を参照
 
 ---
 
@@ -121,8 +123,10 @@ graph TB
 aws-3tier-portfolio/
 ├── README.md                    # このファイル
 ├── docs/                        # ドキュメント・図
-│   ├── architecture.png         # 詳細構成図
-│   └── screenshots/             # 動作画面
+│   ├── vpc-design.md            # VPC設計書（ネットワーク・SG・ルーティング設計）
+│   ├── construction-log.md      # 構築ログ（作業記録）
+│   ├── architecture.png         # 詳細構成図（EC2/RDS/ALB構築後に追加予定）
+│   └── screenshots/             # 動作確認スクリーンショット
 ├── app/                         # Flaskアプリケーション
 │   ├── app.py                   # メインアプリ
 │   ├── templates/
@@ -225,7 +229,9 @@ http://<ALB-DNS-Name>
 | タイプ | プロトコル | ポート | 送信元 |
 |------|----------|------|------|
 | インバウンド | HTTP | 80 | 0.0.0.0/0 |
-| インバウンド | HTTPS | 443 | 0.0.0.0/0 |
+| アウトバウンド | All | All | 0.0.0.0/0 |
+
+> 注意: HTTPS（443）は現時点では未実装。ACM証明書取得後にリスナーを追加予定。
 
 #### SG-EC2（Webサーバー用）
 | タイプ | プロトコル | ポート | 送信元 |
