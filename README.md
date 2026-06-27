@@ -306,6 +306,49 @@ http://<ALB-DNS-Name>
 
 ---
 
+## 💡 ハマったこと・学んだこと
+
+実際に構築・運用する中で遭遇した問題と、そこから得た知識をまとめます。
+
+### 1. IAMユーザーの権限不足でapplyが途中停止
+
+`terraform apply` 実行中、VPC・サブネット・NAT GatewayはOKでも、RDS作成の段階で `AccessDenied: rds:CreateDBSubnetGroup` エラーが発生し停止。
+
+**原因**: Terraformが使うIAMユーザーに `AmazonRDSFullAccess` ポリシーが付いていなかった。
+
+**対処**: 途中まで作られたリソース（NAT GW・EIP等）を `terraform destroy` で即クリーンアップ → IAMでポリシーを追加 → `terraform apply` 再実行で完走。
+
+**学び**: applyが途中停止しても「作りかけのリソースが残って課金される」ことを知った。エラーで止まった後は destroy を最初にやることで余計な課金を防げる。
+
+---
+
+### 2. 放置リソースによる想定外の課金（$185）
+
+作業中に AWS Billing を確認したところ、使っていた記憶のない **Amazon Kendra が $185 課金** されていることを発見。4月に生成AIのハンズオンで作成したインデックスが削除されずに2ヶ月以上稼働していた。
+
+さらに確認を進めると、CloudFormationで作成したスタックに **NAT Gateway が2個** 残っており（月$80相当）、こちらも時間課金が発生していた。
+
+**対処**: Kendra インデックスをコンソールから削除 → CloudFormation スタックごと削除（NAT GW・EIP も一括解放）。
+
+**学び**:
+- AWSは「立てているだけ」で課金されるサービスが多い（Kendra・NAT GW・ALB・EIP等）
+- 学習目的での構築は「`terraform destroy` で必ず後片付け」を徹底する
+- **AWS Budgets** で月$5のアラートを設定し、課金が膨らむ前にメール通知が届く仕組みを整備した
+
+---
+
+### 3. Terraform のコスト管理ワークフロー
+
+ポートフォリオ掲載のスクリーンショット取得後、即 `terraform destroy` を実行。24リソースすべての削除を確認してから次の作業に移るサイクルを確立した。
+
+```
+terraform apply → 動作確認・スクショ撮影 → terraform destroy（必須）
+```
+
+「立てたら消す」を習慣化することで、NAT GW（$0.062/時）やALB（$0.024/時）の立てっぱなしによる課金リスクをゼロにできる。
+
+---
+
 ## 📄 ライセンス
 
 MIT License
